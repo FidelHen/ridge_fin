@@ -12,6 +12,8 @@ class RidgeTextField extends StatefulWidget {
   final bool isPassword;
   final bool autoFocus;
   final bool enabled;
+  final bool enableSuggestions;
+  final bool autocorrect;
   final TextEditingController? controller;
   final List<TextInputFormatter> inputFormatters;
   final List<FieldValidator> validators;
@@ -28,6 +30,8 @@ class RidgeTextField extends StatefulWidget {
     this.isPassword = false,
     this.autoFocus = false,
     this.enabled = true,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
     this.controller,
     this.inputFormatters = const [],
     this.validators = const [],
@@ -59,6 +63,8 @@ class _RidgeTextFieldState extends State<RidgeTextField> {
           keyboardType: widget.keyboardType,
           inputFormatters: widget.inputFormatters,
           onChanged: widget.onChanged,
+          enableSuggestions: widget.enableSuggestions,
+          autocorrect: widget.autocorrect,
           style: GoogleFonts.inter(
             color: AppColors.primaryTextColor,
             fontSize: 16,

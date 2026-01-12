@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ridge_fin/core/bloc/session_bloc.dart';
+import 'package:ridge_fin/core/config/app_router.gr.dart';
 import 'package:ridge_fin/core/di/injection.dart';
 import 'package:ridge_fin/core/utils/app_colors.dart';
 import 'package:ridge_fin/core/utils/app_dimensions.dart';
@@ -84,7 +85,7 @@ class _AuthRegisterViewState extends State<_AuthRegisterView> {
                 const SnackBar(content: Text('Account created successfully!')),
               );
 
-              // TODO: Navigate to home/watchlist
+              context.router.replace(const WatchlistRoute());
             },
             error: (state) {
               ScaffoldMessenger.of(context).showSnackBar(

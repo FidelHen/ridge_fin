@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ridge_fin/core/bloc/session_bloc.dart';
 import 'package:ridge_fin/features/auth/repositories/auth_repository.dart';
+import 'package:ridge_fin/features/watchlist/repositories/ticker_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final getIt = GetIt.instance;
@@ -31,6 +32,10 @@ Future<void> _setupSupabase() async {
 void _setupRepositories() {
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepository(getIt<SupabaseClient>()),
+  );
+  
+  getIt.registerLazySingleton<TickerRepository>(
+    () => TickerRepository(),
   );
 }
 

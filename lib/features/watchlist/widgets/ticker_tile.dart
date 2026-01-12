@@ -34,10 +34,10 @@ class WatchlistTickerTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('S&P 500', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                        Text(title, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
                         SizedBox(height: AppDimensions.spacing4),
                         Text(
-                          "Standard and Poor's 500",
+                          description,
                           style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.secondary),
                         ),
                       ],
