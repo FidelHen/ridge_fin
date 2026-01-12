@@ -85,15 +85,15 @@ class StockChartBloc extends Bloc<StockChartEvent, StockChartState> {
     emit(const StockChartState.loading());
 
     try {
-      final List<StockPriceModel> data;
-      if (_allData != null) {
-        data = _repository.filterDataByTimeRange(_allData!, event.timeRange);
-      } else {
-        data = await _repository.getFilteredData(event.timeRange);
+      if (_allData == null || _allData!.isEmpty) {
+        emit(const StockChartState.error('No data available'));
+        return;
       }
 
+      final data = _repository.filterDataByTimeRange(_allData!, event.timeRange);
+
       if (data.isEmpty) {
-        emit(const StockChartState.error('No data available'));
+        emit(const StockChartState.error('No data available for selected time range'));
         return;
       }
 
