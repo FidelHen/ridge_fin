@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:ridge_fin/core/bloc/session_bloc.dart';
 import 'package:ridge_fin/features/auth/repositories/auth_repository.dart';
 import 'package:ridge_fin/features/watchlist/repositories/ticker_repository.dart';
+import 'package:ridge_fin/features/watchlist/repositories/stock_data_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final getIt = GetIt.instance;
@@ -36,6 +37,10 @@ void _setupRepositories() {
 
   getIt.registerLazySingleton<TickerRepository>(
     () => TickerRepository(),
+  );
+
+  getIt.registerLazySingleton<StockDataRepository>(
+    () => StockDataRepository(),
   );
 }
 

@@ -1,23 +1,52 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ridge_fin/core/di/injection.dart';
 import 'package:ridge_fin/core/utils/app_colors.dart';
 import 'package:ridge_fin/core/utils/app_dimensions.dart';
 import 'package:ridge_fin/core/utils/app_images.dart';
 import 'package:ridge_fin/core/widgets/status_image/status_image.dart';
-import 'package:ridge_fin/features/watchlist/widgets/ticker_performance.dart';
+import 'package:ridge_fin/features/watchlist/bloc/stock_chart_bloc.dart';
+import 'package:ridge_fin/features/watchlist/repositories/stock_data_repository.dart';
+import 'package:ridge_fin/features/watchlist/widgets/stock_chart.dart';
 
 @RoutePage()
-class WatchlistStockQuotePage extends StatefulWidget {
+class WatchlistStockQuotePage extends StatelessWidget {
   const WatchlistStockQuotePage({super.key});
 
   @override
-  State<WatchlistStockQuotePage> createState() => _WatchlistStockQuotePageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => StockChartBloc(getIt<StockDataRepository>())..add(const LoadChartData(TimeRange.oneWeek)),
+      child: const _WatchlistStockQuoteView(),
+    );
+  }
 }
 
-class _WatchlistStockQuotePageState extends State<WatchlistStockQuotePage> {
+class _WatchlistStockQuoteView extends StatefulWidget {
+  const _WatchlistStockQuoteView();
+
+  @override
+  State<_WatchlistStockQuoteView> createState() => _WatchlistStockQuoteViewState();
+}
+
+class _WatchlistStockQuoteViewState extends State<_WatchlistStockQuoteView> {
   int _activeTabIndex = 0;
   bool isErrorState = false;
+
+  TimeRange _getTimeRangeFromIndex(int index) {
+    switch (index) {
+      case 0:
+        return TimeRange.oneWeek;
+      case 1:
+        return TimeRange.oneMonth;
+      case 2:
+        return TimeRange.oneYear;
+      default:
+        return TimeRange.oneWeek;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,22 +86,16 @@ class _WatchlistStockQuotePageState extends State<WatchlistStockQuotePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Standard and Poor\'s 500', style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w500)),
-                        Text(
-                          '\$479.28',
-                          style: GoogleFonts.robotoMono(fontSize: 26, fontWeight: FontWeight.w600, color: AppColors.positive),
-                        ),
-                        WatchlistTickerPerformance(),
+                        Text('Microsoft Corporation', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w500)),
+                        SizedBox(height: AppDimensions.spacing8),
                       ],
                     ),
                   ),
-                  SizedBox(height: AppDimensions.spacing24),
                   SizedBox(
-                    height: 300,
-                    child: Placeholder(
-                      color: Colors.grey,
-                    ),
+                    height: 280,
+                    child: const StockChart(),
                   ),
+                  SizedBox(height: AppDimensions.spacing16),
                   _buildTabBar(),
                   SizedBox(height: AppDimensions.spacing32),
                   Padding(
@@ -227,6 +250,9 @@ class _WatchlistStockQuotePageState extends State<WatchlistStockQuotePage> {
                     setState(() {
                       _activeTabIndex = index;
                     });
+                    context.read<StockChartBloc>().add(
+                      ChangeTimeRange(_getTimeRangeFromIndex(index)),
+                    );
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Container(
