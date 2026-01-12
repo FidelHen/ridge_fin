@@ -10,9 +10,9 @@ class AuthRepository {
 
   Future<bool> checkUserExists(String email) async {
     try {
-      final response = await _supabase.from('profiles').select('id').eq('email', email).maybeSingle();
+      final response = await _supabase.rpc('check_email_exists', params: {'user_email': email});
 
-      return response != null;
+      return response as bool;
     } catch (e) {
       throw Exception('Failed to check user: $e');
     }

@@ -1,4 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ridge_fin/core/bloc/session_bloc.dart';
+import 'package:ridge_fin/core/config/app_router.gr.dart';
 import 'package:ridge_fin/core/utils/app_dimensions.dart';
 import 'package:ridge_fin/core/utils/app_images.dart';
 import 'package:ridge_fin/core/widgets/button/ridge_button.dart';
@@ -35,7 +39,11 @@ class _WatchlistLogoutBottomSheetState extends State<WatchlistLogoutBottomSheet>
             RidgeButton(
               label: 'Logout',
               isDestructive: true,
-              onPressed: () {},
+              onPressed: () {
+                context.read<SessionBloc>().add(const UserLoggedOut());
+                Navigator.pop(context);
+                context.router.replaceAll([const AuthLandingRoute()]);
+              },
             ),
             SizedBox(height: AppDimensions.spacing14),
             RidgeButton(

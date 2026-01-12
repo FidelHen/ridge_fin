@@ -65,6 +65,22 @@ class FinnhubRepository {
     }
   }
 
+  Future<List<CompanyNewsModel>> getGeneralNews() async {
+    try {
+      final response = await _dio.get(
+        '$_baseUrl/news',
+        queryParameters: {
+          'category': 'general',
+          'token': _apiKey,
+        },
+      );
+
+      return (response.data as List).map((json) => CompanyNewsModel.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch general news: $e');
+    }
+  }
+
   void clearCache() {
     _quoteCache.clear();
     _newsCache.clear();

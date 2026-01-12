@@ -8,6 +8,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: AuthLandingRoute.page,
       path: '/landing',
+      initial: true,
     ),
     AutoRoute(
       page: AuthEnterEmailRoute.page,
@@ -24,7 +25,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: WatchlistRoute.page,
       path: '/watchlist',
-      initial: true,
     ),
     AutoRoute(
       page: WatchlistSearchStockRoute.page,

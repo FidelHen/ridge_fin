@@ -9,10 +9,10 @@ import 'package:ridge_fin/core/utils/app_dimensions.dart';
 import 'package:ridge_fin/features/watchlist/bloc/stock_chart_bloc.dart';
 import 'package:ridge_fin/features/watchlist/models/stock_price_model.dart';
 
-class StockChart extends StatelessWidget {
+class WatchlistStockChart extends StatelessWidget {
   final List<StockPriceModel> historicalPrices;
 
-  const StockChart({
+  const WatchlistStockChart({
     super.key,
     required this.historicalPrices,
   });

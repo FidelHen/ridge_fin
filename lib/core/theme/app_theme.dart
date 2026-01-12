@@ -144,6 +144,10 @@ class AppTheme {
         thickness: 1,
         space: 1,
       ),
+
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.primaryTextColor,
+      ),
     );
   }
 }

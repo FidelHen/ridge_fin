@@ -2,11 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ridge_fin/core/bloc/session_bloc.dart';
+import 'package:ridge_fin/core/services/cache_service.dart';
 import 'package:ridge_fin/features/auth/repositories/auth_repository.dart';
 import 'package:ridge_fin/features/watchlist/repositories/ticker_repository.dart';
 import 'package:ridge_fin/features/watchlist/repositories/stock_data_repository.dart';
 import 'package:ridge_fin/features/watchlist/repositories/finnhub_repository.dart';
 import 'package:ridge_fin/features/watchlist/repositories/fmp_repository.dart';
+import 'package:ridge_fin/features/watchlist/repositories/watchlist_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final getIt = GetIt.instance;
@@ -64,6 +66,14 @@ void _setupRepositories() {
 
   getIt.registerLazySingleton<FmpRepository>(
     () => FmpRepository(getIt<Dio>()),
+  );
+
+  getIt.registerLazySingleton<WatchlistRepository>(
+    () => WatchlistRepository(getIt<SupabaseClient>()),
+  );
+
+  getIt.registerLazySingleton<CacheService>(
+    () => CacheService(),
   );
 }
 

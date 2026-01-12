@@ -85,6 +85,40 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- 10. Create watchlist table
+-- Watchlist table
+CREATE TABLE IF NOT EXISTS public.watchlist (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  symbol VARCHAR(10) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, symbol)
+);
+
+-- Enable RLS
+ALTER TABLE public.watchlist ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can only see their own watchlist
+CREATE POLICY "Users can view their own watchlist"
+  ON public.watchlist FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Policy: Users can insert to their own watchlist
+CREATE POLICY "Users can insert to their own watchlist"
+  ON public.watchlist FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Policy: Users can delete from their own watchlist
+CREATE POLICY "Users can delete from their own watchlist"
+  ON public.watchlist FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Index for faster lookups
+CREATE INDEX IF NOT EXISTS watchlist_user_id_idx ON public.watchlist(user_id);
+CREATE INDEX IF NOT EXISTS watchlist_symbol_idx ON public.watchlist(symbol);
+
+
 -- ============================================
 -- INSTRUCTIONS:
 -- 1. Go to your Supabase project dashboard
