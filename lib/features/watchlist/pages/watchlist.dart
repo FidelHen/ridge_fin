@@ -6,6 +6,7 @@ import 'package:ridge_fin/core/utils/app_dimensions.dart';
 import 'package:ridge_fin/core/utils/app_images.dart';
 import 'package:ridge_fin/core/widgets/button/ridge_button.dart';
 import 'package:ridge_fin/core/widgets/status_image/status_image.dart';
+import 'package:ridge_fin/features/watchlist/widgets/logout_bottom_sheet.dart';
 
 @RoutePage()
 class WatchlistPage extends StatefulWidget {
@@ -30,7 +31,9 @@ class _WatchlistPageState extends State<WatchlistPage> {
         actionsPadding: EdgeInsets.only(right: AppDimensions.spacing16),
         actions: [
           IconButton.filled(
-            onPressed: () {},
+            onPressed: () {
+              WatchlistLogoutBottomSheet.show(context);
+            },
             style: IconButton.styleFrom(
               foregroundColor: AppColors.iconColor,
               backgroundColor: AppColors.iconButtonBackgroundColor,

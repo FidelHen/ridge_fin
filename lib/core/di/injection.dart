@@ -33,7 +33,7 @@ void _setupRepositories() {
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepository(getIt<SupabaseClient>()),
   );
-  
+
   getIt.registerLazySingleton<TickerRepository>(
     () => TickerRepository(),
   );

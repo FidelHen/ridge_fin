@@ -5,12 +5,14 @@ class RidgeButton extends StatefulWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
+  final bool isDestructive;
 
   const RidgeButton({
     super.key,
     required this.label,
     required this.onPressed,
     this.isLoading = false,
+    this.isDestructive = false,
   });
 
   @override
@@ -25,12 +27,18 @@ class _RidgeButtonState extends State<RidgeButton> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: widget.onPressed,
+        style: widget.isDestructive
+            ? ElevatedButton.styleFrom(
+                backgroundColor: AppColors.negative,
+                foregroundColor: Colors.white,
+              )
+            : null,
         child: widget.isLoading
             ? SizedBox(
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
-                  color: AppColors.primaryTextColor,
+                  color: widget.isDestructive ? Colors.white : AppColors.primaryTextColor,
                   strokeWidth: 3,
                 ),
               )
