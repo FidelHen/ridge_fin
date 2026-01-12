@@ -16,4 +16,5 @@ class AppColors {
   static const Color primaryTextColor = Color(0xFF000000);
   static const Color transparent = Colors.transparent;
   static const Color dividerColor = Color(0xFFE5E5E5);
+  static const Color cardBorderColor = Color(0xFFF5F5F5);
 }

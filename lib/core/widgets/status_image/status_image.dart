@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ridge_fin/core/utils/app_colors.dart';
 import 'package:ridge_fin/core/utils/app_dimensions.dart';
-import 'package:ridge_fin/core/utils/app_images.dart';
 
 class StatusImage extends StatelessWidget {
   final String imagePath;
+  final double? imageHeight;
   final String title;
   final String description;
 
-  const StatusImage({super.key, required this.imagePath, required this.title, required this.description});
+  const StatusImage({super.key, required this.imagePath, required this.title, required this.description, this.imageHeight});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +17,8 @@ class StatusImage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Image.asset(
-          AppImages.emptyState,
-          height: 160,
+          imagePath,
+          height: imageHeight ?? 160,
         ),
         SizedBox(height: AppDimensions.spacing28),
         Text(

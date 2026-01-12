@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:ridge_fin/core/config/app_router.gr.dart';
 import 'package:ridge_fin/core/utils/app_colors.dart';
 import 'package:ridge_fin/core/utils/app_dimensions.dart';
 import 'package:ridge_fin/core/widgets/input_fields/ridge_text_field.dart';
@@ -41,6 +41,9 @@ class _WatchlistSearchStockPageState extends State<WatchlistSearchStockPage> {
                       title: 'S&P 500',
                       description: 'Standard and Poor\'s 500',
                       trailing: Icon(Icons.add_circle_outline, size: 24, color: AppColors.positive),
+                      onTap: () {
+                        context.router.push(const WatchlistStockQuoteRoute());
+                      },
                     );
                   },
                 ),
