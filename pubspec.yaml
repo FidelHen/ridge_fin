@@ -29,6 +29,7 @@ dependencies:
   flutter_form_builder: ^10.2.0
   fl_chart: ^1.1.1
   intl: ^0.20.2
+  url_launcher: ^6.3.1
   animated_flip_counter: ^0.3.4
 
 dev_dependencies:

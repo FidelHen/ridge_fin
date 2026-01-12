@@ -98,7 +98,10 @@ class _WatchlistSearchStockViewState extends State<_WatchlistSearchStockView> {
                             description: ticker.title,
                             onTap: () {
                               context.router.push(
-                                const WatchlistStockQuoteRoute(),
+                                WatchlistStockQuoteRoute(
+                                  symbol: ticker.ticker,
+                                  title: ticker.title,
+                                ),
                               );
                             },
                           );

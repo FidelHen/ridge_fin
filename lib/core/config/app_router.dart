@@ -32,7 +32,7 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(
       page: WatchlistStockQuoteRoute.page,
-      path: '/watchlist/stock-quote',
+      path: '/watchlist/stock-quote/:symbol',
     ),
   ];
 }

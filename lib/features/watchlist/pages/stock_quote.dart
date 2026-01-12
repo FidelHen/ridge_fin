@@ -2,38 +2,159 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:ridge_fin/core/di/injection.dart';
 import 'package:ridge_fin/core/utils/app_colors.dart';
 import 'package:ridge_fin/core/utils/app_dimensions.dart';
 import 'package:ridge_fin/core/utils/app_images.dart';
 import 'package:ridge_fin/core/widgets/status_image/status_image.dart';
+import 'package:ridge_fin/features/watchlist/bloc/stock_detail_bloc.dart';
 import 'package:ridge_fin/features/watchlist/bloc/stock_chart_bloc.dart';
+import 'package:ridge_fin/features/watchlist/models/company_news_model.dart';
+import 'package:ridge_fin/features/watchlist/models/stock_price_model.dart';
+import 'package:ridge_fin/features/watchlist/repositories/finnhub_repository.dart';
+import 'package:ridge_fin/features/watchlist/repositories/fmp_repository.dart';
 import 'package:ridge_fin/features/watchlist/repositories/stock_data_repository.dart';
 import 'package:ridge_fin/features/watchlist/widgets/stock_chart.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 @RoutePage()
 class WatchlistStockQuotePage extends StatelessWidget {
-  const WatchlistStockQuotePage({super.key});
+  final String symbol;
+  final String? title;
+
+  const WatchlistStockQuotePage({
+    super.key,
+    @PathParam('symbol') required this.symbol,
+    @QueryParam('title') this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => StockChartBloc(getIt<StockDataRepository>())..add(const LoadChartData(TimeRange.oneWeek)),
-      child: const _WatchlistStockQuoteView(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => StockDetailBloc(
+            getIt<FinnhubRepository>(),
+            getIt<FmpRepository>(),
+          )..add(LoadStockDetail(symbol)),
+        ),
+      ],
+      child: _WatchlistStockQuoteView(
+        symbol: symbol,
+        title: title ?? symbol,
+      ),
     );
   }
 }
 
 class _WatchlistStockQuoteView extends StatefulWidget {
-  const _WatchlistStockQuoteView();
+  final String symbol;
+  final String title;
+
+  const _WatchlistStockQuoteView({
+    required this.symbol,
+    required this.title,
+  });
 
   @override
   State<_WatchlistStockQuoteView> createState() => _WatchlistStockQuoteViewState();
 }
 
 class _WatchlistStockQuoteViewState extends State<_WatchlistStockQuoteView> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StockDetailBloc, StockDetailState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            actionsPadding: EdgeInsets.only(right: AppDimensions.spacing16),
+            actions: [
+              state.maybeWhen(
+                loaded: (_, __, ___, ____) => IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.star_outline,
+                    size: 28,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.iconColor,
+                  ),
+                ),
+                orElse: () => const SizedBox.shrink(),
+              ),
+            ],
+            title: state.maybeWhen(
+              loaded: (_, __, ___, ____) => Container(
+                decoration: BoxDecoration(
+                  color: AppColors.textFieldBackground,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppDimensions.spacing20,
+                  vertical: AppDimensions.spacing8,
+                ),
+                child: Text(
+                  widget.symbol,
+                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+              ),
+              orElse: () => null,
+            ),
+          ),
+          body: SafeArea(
+            child: state.when(
+              initial: () => const SizedBox.shrink(),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              loaded: (symbol, quote, historicalPrices, news) {
+                return _StockQuoteLoadedContent(
+                  symbol: widget.symbol,
+                  title: widget.title,
+                  quote: quote,
+                  historicalPrices: historicalPrices,
+                  news: news,
+                );
+              },
+              error: (message) => _buildEmptyState(message),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Align(
+      alignment: const Alignment(0, -0.6),
+      child: StatusImage(
+        imagePath: AppImages.errorState,
+        title: 'Something went wrong',
+        description: message,
+      ),
+    );
+  }
+}
+
+class _StockQuoteLoadedContent extends StatefulWidget {
+  final String symbol;
+  final String title;
+  final dynamic quote;
+  final List<StockPriceModel> historicalPrices;
+  final List<CompanyNewsModel> news;
+
+  const _StockQuoteLoadedContent({
+    required this.symbol,
+    required this.title,
+    required this.quote,
+    required this.historicalPrices,
+    required this.news,
+  });
+
+  @override
+  State<_StockQuoteLoadedContent> createState() => _StockQuoteLoadedContentState();
+}
+
+class _StockQuoteLoadedContentState extends State<_StockQuoteLoadedContent> {
   int _activeTabIndex = 0;
-  bool isErrorState = false;
 
   TimeRange _getTimeRangeFromIndex(int index) {
     switch (index) {
@@ -50,95 +171,79 @@ class _WatchlistStockQuoteViewState extends State<_WatchlistStockQuoteView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actionsPadding: EdgeInsets.only(right: AppDimensions.spacing16),
-        actions: [
-          if (!isErrorState)
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.star_outline,
-                size: 28,
-                fontWeight: FontWeight.w500,
-                color: AppColors.iconColor,
+    return BlocProvider(
+      create: (context) {
+        final bloc = StockChartBloc(getIt<StockDataRepository>(), widget.historicalPrices);
+        bloc.add(const LoadChartData(TimeRange.oneWeek));
+        return bloc;
+      },
+      child: Builder(
+        builder: (context) => _buildContent(context),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return ListView(
+      children: [
+        Padding(
+          padding: AppDimensions.getContentPadding(bottom: false),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.title,
+                style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w500),
               ),
-            ),
-        ],
-        title: isErrorState
-            ? null
-            : Container(
-                decoration: BoxDecoration(
-                  color: AppColors.textFieldBackground,
-                  borderRadius: BorderRadius.circular(100),
+              SizedBox(height: AppDimensions.spacing8),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 280,
+          child: StockChart(
+            historicalPrices: widget.historicalPrices,
+          ),
+        ),
+        SizedBox(height: AppDimensions.spacing16),
+        _buildTabBar(context),
+        SizedBox(height: AppDimensions.spacing32),
+        Padding(
+          padding: AppDimensions.getContentPadding(bottom: false, top: false),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Key Statistics',
+                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: AppDimensions.spacing16),
+              _buildKeyStatistics(widget.quote),
+            ],
+          ),
+        ),
+        SizedBox(height: AppDimensions.spacing24),
+        if (widget.news.isNotEmpty) ...[
+          Padding(
+            padding: AppDimensions.getContentPadding(bottom: false, top: false),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Company News',
+                  style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: AppDimensions.spacing20, vertical: AppDimensions.spacing8),
-                child: Text('S&P 500', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-              ),
-      ),
-      body: SafeArea(
-        child: isErrorState
-            ? _buildEmptyState()
-            : ListView(
-                children: [
-                  Padding(
-                    padding: AppDimensions.getContentPadding(bottom: false),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Microsoft Corporation', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w500)),
-                        SizedBox(height: AppDimensions.spacing8),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 280,
-                    child: const StockChart(),
-                  ),
-                  SizedBox(height: AppDimensions.spacing16),
-                  _buildTabBar(),
-                  SizedBox(height: AppDimensions.spacing32),
-                  Padding(
-                    padding: AppDimensions.getContentPadding(bottom: false, top: false),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Key Statistics', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
-                        SizedBox(height: AppDimensions.spacing16),
-                        _buildKeyStatistics(),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: AppDimensions.spacing24),
-                  Padding(
-                    padding: AppDimensions.getContentPadding(bottom: false, top: false),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Company News', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
-                        SizedBox(height: AppDimensions.spacing16),
-                        _buildCompanyNews(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-      ),
+                SizedBox(height: AppDimensions.spacing16),
+                _buildCompanyNews(widget.news),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 
-  Widget _buildEmptyState() {
-    return Align(
-      alignment: Alignment(0, -0.6),
-      child: StatusImage(
-        imagePath: AppImages.errorState,
-        title: 'Something went wrong',
-        description: 'Sorry for the inconvenience, relax and check on us later.',
-      ),
-    );
-  }
-
-  Widget _buildKeyStatistics() {
+  Widget _buildKeyStatistics(dynamic quote) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -150,72 +255,107 @@ class _WatchlistStockQuoteViewState extends State<_WatchlistStockQuoteView> {
         spacing: AppDimensions.spacing24,
         runSpacing: AppDimensions.spacing16,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Market Cap',
-                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.secondary),
-              ),
-              Text(
-                '\$1.23T',
-                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Market Cap',
-                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.secondary),
-              ),
-              Text(
-                '\$1.23T',
-                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
+          _buildStatItem('Open', '\$${quote.openPrice.toStringAsFixed(2)}'),
+          _buildStatItem('High', '\$${quote.highPrice.toStringAsFixed(2)}'),
+          _buildStatItem('Low', '\$${quote.lowPrice.toStringAsFixed(2)}'),
+          _buildStatItem('Prev Close', '\$${quote.previousClose.toStringAsFixed(2)}'),
         ],
       ),
     );
   }
 
-  Widget _buildCompanyNews() {
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.secondary,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCompanyNews(List<CompanyNewsModel> news) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 10,
+      itemCount: news.length > 10 ? 10 : news.length,
       itemBuilder: (context, index) {
+        final article = news[index];
+        final date = DateTime.fromMillisecondsSinceEpoch(article.datetime * 1000);
+        final formattedDate = DateFormat('MMM dd, yyyy').format(date);
+
         return Padding(
           padding: EdgeInsets.only(bottom: AppDimensions.spacing12),
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: AppColors.dividerColor),
-            ),
-            padding: EdgeInsets.all(AppDimensions.spacing14),
-            child: Row(
-              children: [
-                Placeholder(
-                  fallbackHeight: 42,
-                  fallbackWidth: 42,
-                ),
-                SizedBox(width: AppDimensions.spacing16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Company News', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
-                      Text(
-                        'Company News',
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.secondary),
+          child: InkWell(
+            onTap: () => _launchUrl(article.url),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.dividerColor),
+              ),
+              padding: EdgeInsets.all(AppDimensions.spacing14),
+              child: Row(
+                children: [
+                  if (article.image.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Image.network(
+                        article.image,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 60,
+                            height: 60,
+                            color: AppColors.textFieldBackground,
+                            child: Icon(
+                              Icons.article,
+                              color: AppColors.iconColor,
+                            ),
+                          );
+                        },
                       ),
-                    ],
+                    ),
+                  SizedBox(width: AppDimensions.spacing16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          article.headline,
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: AppDimensions.spacing4),
+                        Text(
+                          '${article.source} • $formattedDate',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -223,7 +363,14 @@ class _WatchlistStockQuoteViewState extends State<_WatchlistStockQuoteView> {
     );
   }
 
-  Widget _buildTabBar() {
+  Future<void> _launchUrl(String urlString) async {
+    final url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      debugPrint('Could not launch $urlString');
+    }
+  }
+
+  Widget _buildTabBar(BuildContext context) {
     final tabs = ['1 Week', '1 Month', '1 Year'];
 
     return SizedBox(
@@ -272,7 +419,6 @@ class _WatchlistStockQuoteViewState extends State<_WatchlistStockQuoteView> {
                             ),
                           ),
                         ),
-
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           height: 2,

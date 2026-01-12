@@ -10,14 +10,24 @@ import 'package:ridge_fin/features/watchlist/bloc/stock_chart_bloc.dart';
 import 'package:ridge_fin/features/watchlist/models/stock_price_model.dart';
 
 class StockChart extends StatelessWidget {
-  const StockChart({super.key});
+  final List<StockPriceModel> historicalPrices;
+
+  const StockChart({
+    super.key,
+    required this.historicalPrices,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StockChartBloc, StockChartState>(
       builder: (context, state) {
+        final data = state.maybeWhen(
+          loaded: (filteredData, _, __, ___, ____, _____) => filteredData,
+          orElse: () => historicalPrices,
+        );
+
         return state.maybeWhen(
-          loaded: (data, timeRange, currentPrice, performance, displayDate, selectedIndex) {
+          loaded: (_, timeRange, currentPrice, performance, displayDate, selectedIndex) {
             final startPrice = data.isNotEmpty ? data.first.price : 0.0;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +152,9 @@ class StockChart extends StatelessWidget {
                 getTooltipColor: (touchedSpot) => Colors.transparent,
                 tooltipPadding: EdgeInsets.zero,
                 tooltipMargin: 0,
-                getTooltipItems: (touchedSpots) => [],
+                getTooltipItems: (touchedSpots) {
+                  return touchedSpots.map((spot) => null).toList();
+                },
               ),
               getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
                 return spotIndexes.map((spotIndex) {

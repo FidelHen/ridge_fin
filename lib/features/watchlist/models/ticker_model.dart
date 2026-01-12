@@ -6,7 +6,7 @@ part 'ticker_model.g.dart';
 @freezed
 sealed class TickerModel with _$TickerModel {
   const factory TickerModel({
-    required int cikStr,
+    @JsonKey(name: 'cik_str') required int cikStr,
     required String ticker,
     required String title,
   }) = _TickerModel;

@@ -66,11 +66,16 @@ class ChangeTimeRange extends StockChartEvent {
 // ============================================
 class StockChartBloc extends Bloc<StockChartEvent, StockChartState> {
   final StockDataRepository _repository;
+  List<StockPriceModel>? _allData;
 
-  StockChartBloc(this._repository) : super(const StockChartState.initial()) {
+  StockChartBloc(this._repository, [List<StockPriceModel>? initialData]) : _allData = initialData, super(const StockChartState.initial()) {
     on<LoadChartData>(_onLoadChartData);
     on<UpdateSelectedPoint>(_onUpdateSelectedPoint);
     on<ChangeTimeRange>(_onChangeTimeRange);
+  }
+
+  void setData(List<StockPriceModel> data) {
+    _allData = data;
   }
 
   Future<void> _onLoadChartData(
@@ -80,7 +85,12 @@ class StockChartBloc extends Bloc<StockChartEvent, StockChartState> {
     emit(const StockChartState.loading());
 
     try {
-      final data = await _repository.getFilteredData(event.timeRange);
+      final List<StockPriceModel> data;
+      if (_allData != null) {
+        data = _repository.filterDataByTimeRange(_allData!, event.timeRange);
+      } else {
+        data = await _repository.getFilteredData(event.timeRange);
+      }
 
       if (data.isEmpty) {
         emit(const StockChartState.error('No data available'));

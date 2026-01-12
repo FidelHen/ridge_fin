@@ -189,16 +189,72 @@ class WatchlistSearchStockRoute extends _i8.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.WatchlistStockQuotePage]
-class WatchlistStockQuoteRoute extends _i8.PageRouteInfo<void> {
-  const WatchlistStockQuoteRoute({List<_i8.PageRouteInfo>? children})
-    : super(WatchlistStockQuoteRoute.name, initialChildren: children);
+class WatchlistStockQuoteRoute
+    extends _i8.PageRouteInfo<WatchlistStockQuoteRouteArgs> {
+  WatchlistStockQuoteRoute({
+    _i9.Key? key,
+    required String symbol,
+    String? title,
+    List<_i8.PageRouteInfo>? children,
+  }) : super(
+         WatchlistStockQuoteRoute.name,
+         args: WatchlistStockQuoteRouteArgs(
+           key: key,
+           symbol: symbol,
+           title: title,
+         ),
+         rawPathParams: {'symbol': symbol},
+         rawQueryParams: {'title': title},
+         initialChildren: children,
+       );
 
   static const String name = 'WatchlistStockQuoteRoute';
 
   static _i8.PageInfo page = _i8.PageInfo(
     name,
     builder: (data) {
-      return const _i7.WatchlistStockQuotePage();
+      final pathParams = data.inheritedPathParams;
+      final queryParams = data.queryParams;
+      final args = data.argsAs<WatchlistStockQuoteRouteArgs>(
+        orElse: () => WatchlistStockQuoteRouteArgs(
+          symbol: pathParams.getString('symbol'),
+          title: queryParams.optString('title'),
+        ),
+      );
+      return _i7.WatchlistStockQuotePage(
+        key: args.key,
+        symbol: args.symbol,
+        title: args.title,
+      );
     },
   );
+}
+
+class WatchlistStockQuoteRouteArgs {
+  const WatchlistStockQuoteRouteArgs({
+    this.key,
+    required this.symbol,
+    this.title,
+  });
+
+  final _i9.Key? key;
+
+  final String symbol;
+
+  final String? title;
+
+  @override
+  String toString() {
+    return 'WatchlistStockQuoteRouteArgs{key: $key, symbol: $symbol, title: $title}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! WatchlistStockQuoteRouteArgs) return false;
+    return key == other.key && symbol == other.symbol && title == other.title;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ symbol.hashCode ^ title.hashCode;
 }
