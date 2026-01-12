@@ -7,6 +7,7 @@ class AppColors {
   static const Color secondary = Color(0xFF737373);
   static const Color textFieldBackground = Color(0xFFF2F2F2);
   static const Color iconColor = Color(0xFF5F6368);
+  static const Color iconButtonBackgroundColor = Color(0xFFF0F0F0);
   static const Color positive = Color(0xFF08953B);
   static const Color negative = Color(0xFFC6362E);
   static const Color warning = Color(0xFFD97706);
@@ -14,4 +15,5 @@ class AppColors {
   static const Color backgroundColor = Color(0xFFFFFFFF);
   static const Color primaryTextColor = Color(0xFF000000);
   static const Color transparent = Colors.transparent;
+  static const Color dividerColor = Color(0xFFE5E5E5);
 }

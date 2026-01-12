@@ -21,6 +21,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.backgroundColor,
         foregroundColor: AppColors.primaryTextColor,
+        surfaceTintColor: AppColors.transparent,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: GoogleFonts.inter(
@@ -67,10 +68,7 @@ class AppTheme {
       ),
 
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          splashFactory: NoSplash.splashFactory,
-          overlayColor: AppColors.transparent,
-        ),
+        style: IconButton.styleFrom(splashFactory: NoSplash.splashFactory, overlayColor: AppColors.transparent),
       ),
 
       // Input Decoration Theme

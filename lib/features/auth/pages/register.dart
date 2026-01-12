@@ -159,7 +159,7 @@ class _AuthRegisterViewState extends State<_AuthRegisterView> {
                     ),
                   ),
                 ),
-                SizedBox(height: AppDimensions.spacing24),
+                SizedBox(height: AppDimensions.spacing16),
                 BlocBuilder<RegisterBloc, RegisterState>(
                   builder: (context, state) {
                     final isLoading = state.mapOrNull(loading: (_) => true) ?? false;

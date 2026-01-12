@@ -9,22 +9,24 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i5;
-import 'package:flutter/material.dart' as _i6;
+import 'package:auto_route/auto_route.dart' as _i7;
+import 'package:flutter/material.dart' as _i8;
 import 'package:ridge_fin/features/auth/pages/enter_email.dart' as _i1;
 import 'package:ridge_fin/features/auth/pages/landing.dart' as _i2;
 import 'package:ridge_fin/features/auth/pages/login.dart' as _i3;
 import 'package:ridge_fin/features/auth/pages/register.dart' as _i4;
+import 'package:ridge_fin/features/watchlist/pages/search_stock.dart' as _i6;
+import 'package:ridge_fin/features/watchlist/pages/watchlist.dart' as _i5;
 
 /// generated route for
 /// [_i1.AuthEnterEmailPage]
-class AuthEnterEmailRoute extends _i5.PageRouteInfo<void> {
-  const AuthEnterEmailRoute({List<_i5.PageRouteInfo>? children})
+class AuthEnterEmailRoute extends _i7.PageRouteInfo<void> {
+  const AuthEnterEmailRoute({List<_i7.PageRouteInfo>? children})
     : super(AuthEnterEmailRoute.name, initialChildren: children);
 
   static const String name = 'AuthEnterEmailRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
       return const _i1.AuthEnterEmailPage();
@@ -34,13 +36,13 @@ class AuthEnterEmailRoute extends _i5.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.AuthLandingPage]
-class AuthLandingRoute extends _i5.PageRouteInfo<void> {
-  const AuthLandingRoute({List<_i5.PageRouteInfo>? children})
+class AuthLandingRoute extends _i7.PageRouteInfo<void> {
+  const AuthLandingRoute({List<_i7.PageRouteInfo>? children})
     : super(AuthLandingRoute.name, initialChildren: children);
 
   static const String name = 'AuthLandingRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
       return const _i2.AuthLandingPage();
@@ -50,11 +52,11 @@ class AuthLandingRoute extends _i5.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.AuthLoginPage]
-class AuthLoginRoute extends _i5.PageRouteInfo<AuthLoginRouteArgs> {
+class AuthLoginRoute extends _i7.PageRouteInfo<AuthLoginRouteArgs> {
   AuthLoginRoute({
-    _i6.Key? key,
+    _i8.Key? key,
     String email = '',
-    List<_i5.PageRouteInfo>? children,
+    List<_i7.PageRouteInfo>? children,
   }) : super(
          AuthLoginRoute.name,
          args: AuthLoginRouteArgs(key: key, email: email),
@@ -64,7 +66,7 @@ class AuthLoginRoute extends _i5.PageRouteInfo<AuthLoginRouteArgs> {
 
   static const String name = 'AuthLoginRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
@@ -80,7 +82,7 @@ class AuthLoginRoute extends _i5.PageRouteInfo<AuthLoginRouteArgs> {
 class AuthLoginRouteArgs {
   const AuthLoginRouteArgs({this.key, this.email = ''});
 
-  final _i6.Key? key;
+  final _i8.Key? key;
 
   final String email;
 
@@ -102,11 +104,11 @@ class AuthLoginRouteArgs {
 
 /// generated route for
 /// [_i4.AuthRegisterPage]
-class AuthRegisterRoute extends _i5.PageRouteInfo<AuthRegisterRouteArgs> {
+class AuthRegisterRoute extends _i7.PageRouteInfo<AuthRegisterRouteArgs> {
   AuthRegisterRoute({
-    _i6.Key? key,
+    _i8.Key? key,
     String email = '',
-    List<_i5.PageRouteInfo>? children,
+    List<_i7.PageRouteInfo>? children,
   }) : super(
          AuthRegisterRoute.name,
          args: AuthRegisterRouteArgs(key: key, email: email),
@@ -116,7 +118,7 @@ class AuthRegisterRoute extends _i5.PageRouteInfo<AuthRegisterRouteArgs> {
 
   static const String name = 'AuthRegisterRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
@@ -132,7 +134,7 @@ class AuthRegisterRoute extends _i5.PageRouteInfo<AuthRegisterRouteArgs> {
 class AuthRegisterRouteArgs {
   const AuthRegisterRouteArgs({this.key, this.email = ''});
 
-  final _i6.Key? key;
+  final _i8.Key? key;
 
   final String email;
 
@@ -150,4 +152,36 @@ class AuthRegisterRouteArgs {
 
   @override
   int get hashCode => key.hashCode ^ email.hashCode;
+}
+
+/// generated route for
+/// [_i5.WatchlistPage]
+class WatchlistRoute extends _i7.PageRouteInfo<void> {
+  const WatchlistRoute({List<_i7.PageRouteInfo>? children})
+    : super(WatchlistRoute.name, initialChildren: children);
+
+  static const String name = 'WatchlistRoute';
+
+  static _i7.PageInfo page = _i7.PageInfo(
+    name,
+    builder: (data) {
+      return const _i5.WatchlistPage();
+    },
+  );
+}
+
+/// generated route for
+/// [_i6.WatchlistSearchStockPage]
+class WatchlistSearchStockRoute extends _i7.PageRouteInfo<void> {
+  const WatchlistSearchStockRoute({List<_i7.PageRouteInfo>? children})
+    : super(WatchlistSearchStockRoute.name, initialChildren: children);
+
+  static const String name = 'WatchlistSearchStockRoute';
+
+  static _i7.PageInfo page = _i7.PageInfo(
+    name,
+    builder: (data) {
+      return const _i6.WatchlistSearchStockPage();
+    },
+  );
 }
