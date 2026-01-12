@@ -391,7 +391,7 @@ class _StockQuoteLoadedContentState extends State<_StockQuoteLoadedContent> {
                           duration: const Duration(milliseconds: 200),
                           height: 2,
                           width: _activeTabIndex == index ? 60 : 0,
-                          color: AppColors.brandColor,
+                          color: Colors.black,
                         ),
                       ],
                     ),
